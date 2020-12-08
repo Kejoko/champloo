@@ -1,14 +1,23 @@
-# This .gitignore file should be placed at the root of your Unity project directory
-#
-# Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
-#
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
+# ====================
+# Champloo
+# ====================
+
+
+
+
+# --------------------
+# Unity folders and files
+# --------------------
+[Aa]ssets/AssetStoreTools*
 [Bb]uild/
 [Bb]uilds/
+[Ll]ibrary/
 [Ll]ogs/
+[Ll]ocal[Cc]ache/
 [Mm]emoryCaptures/
+[Oo]bj/
+[Tt]emp/
+[Uu]nityGenerated/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
@@ -57,4 +66,27 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
+
+# VS/MD solution and project files
+[Ee]xportedObj/
+*.booproj
+*.csproj
+*.sln
+*.suo
+*.svd
+*.unityproj
+*.user
+*.userprefs
+*.pidb
+.DS_Store
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
 
