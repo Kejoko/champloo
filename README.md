@@ -1,2 +1,2 @@
 # champloo
-A game
+A game made with unity.
