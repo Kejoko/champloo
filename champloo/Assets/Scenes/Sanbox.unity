@@ -309,10 +309,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 296762488}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.797, z: 0.34}
-  m_LocalScale: {x: 0.58715, y: 0.13703, z: 0.63769}
+  m_LocalPosition: {x: 0, y: 0.8, z: 0.3}
+  m_LocalScale: {x: 0.5, y: 0.2, z: 0.6}
   m_Children: []
-  m_Father: {fileID: 1277618930}
+  m_Father: {fileID: 803654178}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &296762491
@@ -550,9 +550,10 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 296762489}
   m_Father: {fileID: 1277618930}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &803654180
 MeshRenderer:
@@ -717,7 +718,6 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 296762489}
   - {fileID: 803654178}
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -736,7 +736,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!136 &1277618932
 CapsuleCollider:
@@ -751,7 +751,7 @@ CapsuleCollider:
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: -0.001547734, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1277618933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -765,6 +765,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useVelocityMovement: 1
+  fallMultiplier: 2.5
   movementForce: 0
   jumpForce: 5
   numberJumps: 2

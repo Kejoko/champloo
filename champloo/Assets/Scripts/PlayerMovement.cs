@@ -6,15 +6,15 @@ using UnityEngine.UI;
 public class PlayerMovement : MonoBehaviour
 {
     public bool useVelocityMovement = true;
-
+    public float fallMultiplier = 2.5f;
     public float movementForce = 10.0f;
     public float jumpForce = 5.0f;
     public int numberJumps = 2;
 
+    public Text debugMessage;
+
     private bool isGrounded;
     private int remainingJumps;
-
-    public Text debugMessage;
 
     private PlayerInput playerInput;
     private Rigidbody rb;
@@ -36,9 +36,12 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         debugMessage.text = "";
+
         Move();
         CheckGround();
         Jump();
+
+        debugMessage.text += "Velocity: " + rb.velocity + '\n';
     }
 
     /*
@@ -72,27 +75,21 @@ public class PlayerMovement : MonoBehaviour
     */
     private void Move()
     {
-        if (useVelocityMovement)
-        {
+        if (useVelocityMovement) {
             // Use rigidbody velocity
             Vector2 movement = playerInput.movementInput;
             movement.Normalize();
             movement *= movementForce;
-        }
-        else
-        {
+        } else {
             // Use rigidbody force
         }
     }
 
     private void CheckGround()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, 1.0f + 0.01f))
-        {
+        if (Physics.Raycast(transform.position, Vector3.down, 1.0f + 0.01f)) {
             isGrounded = true;
-        }
-        else
-        {
+        } else {
             isGrounded = false;
         }
         debugMessage.text += "Grounded: " + isGrounded + '\n';
@@ -106,17 +103,24 @@ public class PlayerMovement : MonoBehaviour
     */
     private void Jump()
     {
-        if (isGrounded)
-        {
+        if (isGrounded) {
             remainingJumps = numberJumps;
         }
 
         debugMessage.text += "Remaining jumps: " + remainingJumps + '\n';
 
-        if (playerInput.jumpInput && remainingJumps > 0)
-        {
+        if (playerInput.jumpInput && remainingJumps > 0) {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
             remainingJumps -= 1;
         }
+
+        if (rb.velocity.y < 0) {
+            rb.useGravity = false;
+            rb.AddForce(Physics.gravity * fallMultiplier, ForceMode.Acceleration);
+        } else {
+            rb.useGravity = true;
+        }
+
+        debugMessage.text += "Use gravity: " + rb.useGravity + '\n';
     }
 }
