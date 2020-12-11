@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(Rigidbody))]
@@ -13,8 +14,11 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded;
     private int remainingJumps;
 
+    public Text debugMessage;
+
     private PlayerInput playerInput;
     private Rigidbody rb;
+
 
     private void Awake()
     {
@@ -31,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        debugMessage.text = "";
         Move();
         CheckGround();
         Jump();
@@ -90,6 +95,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isGrounded = false;
         }
+        debugMessage.text += "Grounded: " + isGrounded + '\n';
     }
 
     /*
@@ -105,9 +111,10 @@ public class PlayerMovement : MonoBehaviour
             remainingJumps = numberJumps;
         }
 
+        debugMessage.text += "Remaining jumps: " + remainingJumps + '\n';
+
         if (playerInput.jumpInput && remainingJumps > 0)
         {
-            // Use rigidbody force
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             remainingJumps -= 1;
         }
