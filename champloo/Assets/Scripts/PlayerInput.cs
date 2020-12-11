@@ -13,10 +13,6 @@ public class PlayerInput : MonoBehaviour
     }
     */
 
-    private void FixedUpdate()
-    {
-    }
-
     private void Update()
     {
         movementInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));

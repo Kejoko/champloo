@@ -115,7 +115,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerInput.jumpInput && remainingJumps > 0)
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
             remainingJumps -= 1;
         }
     }
