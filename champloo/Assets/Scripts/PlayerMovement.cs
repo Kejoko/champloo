@@ -5,20 +5,41 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Horizontal Movement")]
     public bool useVelocityMovement = true;
-    public float fallMultiplier = 2.5f;
-    public float movementForce = 10.0f;
-    public float jumpForce = 5.0f;
+    public float movementSpeed = 10.0f;
+    public float movementForce = 0.25f;
+
+    [Header("Vertical Movement")]
     public int numberJumps = 2;
-
-    public Text debugMessage;
-
-    private bool isGrounded;
+    public float jumpForce = 5.0f;
+    public float fallMultiplier = 2.5f;
     private int remainingJumps;
 
+    [Header("Physics & Collisions")]
+    public float groundDistance = 1.0f;
+    private bool isGrounded;
+
+    [Header("Debug")]
+    public bool debugOn = true;
+    public Text debugMessage;
+
+    // Components
     private PlayerInput playerInput;
     private Rigidbody rb;
 
+
+    private void ClearDebugMessages()
+    {
+        debugMessage.text = "";
+    }
+
+    private void AddDebugMessage(string message)
+    {
+        if (debugOn) {
+            debugMessage.text += message + '\n';
+        }
+    }
 
     private void Awake()
     {
@@ -35,13 +56,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        debugMessage.text = "";
-
+        ClearDebugMessages();
         Move();
         CheckGround();
         Jump();
-
-        debugMessage.text += "Velocity: " + rb.velocity + '\n';
     }
 
     /*
@@ -75,24 +93,32 @@ public class PlayerMovement : MonoBehaviour
     */
     private void Move()
     {
+        Vector3 movement = new Vector3(playerInput.horizontalMovementInput, 0f, playerInput.verticalMovementInput);
+        movement.Normalize();
+
         if (useVelocityMovement) {
             // Use rigidbody velocity
-            Vector2 movement = playerInput.movementInput;
-            movement.Normalize();
-            movement *= movementForce;
+            //rb.velocity = movement * movementSpeed + new Vector3(0f, rb.velocity.y, 0f);
+            Vector2 currentMovement = new Vector2(rb.velocity.x, rb.velocity.z);
+            if (currentMovement.magnitude < movementSpeed) {
+
+            }
+            rb.AddForce(movement * movementForce, ForceMode.VelocityChange);
         } else {
             // Use rigidbody force
         }
+        AddDebugMessage("Position: " + transform.position);
+        AddDebugMessage("Velocity: " + rb.velocity);
     }
 
     private void CheckGround()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, 1.0f + 0.01f)) {
+        if (Physics.Raycast(transform.position, Vector3.down, groundDistance + 0.01f)) {
             isGrounded = true;
         } else {
             isGrounded = false;
         }
-        debugMessage.text += "Grounded: " + isGrounded + '\n';
+        AddDebugMessage("Grounded: " + isGrounded);
     }
 
     /*
@@ -100,6 +126,10 @@ public class PlayerMovement : MonoBehaviour
      * - Use velocity or force on rigidbody?
      * - What do we want the player to be able to jump off? This is dependant on
      * what the player is able to stand/move on.
+     * - Do we want there to be an input window? Must the player give frame
+     * perfect inputs or should we allow a small window for inputs? If the player
+     * inputs a jump 2 frames before being grounded should we jump the character
+     * the frame they hit the ground?
     */
     private void Jump()
     {
@@ -107,9 +137,11 @@ public class PlayerMovement : MonoBehaviour
             remainingJumps = numberJumps;
         }
 
-        debugMessage.text += "Remaining jumps: " + remainingJumps + '\n';
+        AddDebugMessage("Remaining jumps: " + remainingJumps);
 
-        if (playerInput.jumpInput && remainingJumps > 0) {
+        if (playerInput.jumpInput && remainingJumps > 0)
+        {
+            rb.AddForce(new Vector3(rb.velocity.x, -rb.velocity.y, rb.velocity.z), ForceMode.VelocityChange);
             rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
             remainingJumps -= 1;
         }
@@ -121,6 +153,22 @@ public class PlayerMovement : MonoBehaviour
             rb.useGravity = true;
         }
 
-        debugMessage.text += "Use gravity: " + rb.useGravity + '\n';
+        AddDebugMessage("Gravity: " + rb.useGravity + '\t' + Physics.gravity);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (debugOn) {
+            // Ground detection
+            if (isGrounded)
+            {
+                Gizmos.color = Color.red;
+            }
+            else
+            {
+                Gizmos.color = Color.white;
+            }
+            Gizmos.DrawLine(transform.position, transform.position + (Vector3.down * groundDistance));
+        }
     }
 }

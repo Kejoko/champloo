@@ -3,7 +3,8 @@
 public class PlayerInput : MonoBehaviour
 {
 
-    public Vector2 movementInput { get; private set; }
+    public float horizontalMovementInput { get; private set; }
+    public float verticalMovementInput { get; private set; }
     public bool jumpInput { get; private set; }
 
     /*
@@ -15,7 +16,8 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
-        movementInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        horizontalMovementInput = Input.GetAxis("Horizontal");
+        verticalMovementInput = Input.GetAxis("Vertical");
         jumpInput = Input.GetKeyDown(KeyCode.Space);
     }
 }
