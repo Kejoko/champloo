@@ -98,15 +98,17 @@ public class PlayerMovement : MonoBehaviour
 
         if (useVelocityMovement) {
             // Use rigidbody velocity
-            //rb.velocity = movement * movementSpeed + new Vector3(0f, rb.velocity.y, 0f);
+
+            // Use current movement speed in order to determine how much velocity to add
+            // Only add enough velocity to get maginitude(velocity(x,z)) == movementSpeed
             Vector2 currentMovement = new Vector2(rb.velocity.x, rb.velocity.z);
             if (currentMovement.magnitude < movementSpeed) {
-
+                rb.AddForce(movement * movementForce, ForceMode.VelocityChange);
             }
-            rb.AddForce(movement * movementForce, ForceMode.VelocityChange);
         } else {
             // Use rigidbody force
         }
+
         AddDebugMessage("Position: " + transform.position);
         AddDebugMessage("Velocity: " + rb.velocity);
     }
@@ -139,33 +141,30 @@ public class PlayerMovement : MonoBehaviour
 
         AddDebugMessage("Remaining jumps: " + remainingJumps);
 
-        if (playerInput.jumpInput && remainingJumps > 0)
-        {
-            rb.AddForce(new Vector3(rb.velocity.x, -rb.velocity.y, rb.velocity.z), ForceMode.VelocityChange);
+        if (playerInput.jumpInput && remainingJumps > 0) {
+            rb.AddForce(new Vector3(0, -rb.velocity.y, 0), ForceMode.VelocityChange);
             rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
             remainingJumps -= 1;
         }
 
-        if (rb.velocity.y < 0) {
-            rb.useGravity = false;
-            rb.AddForce(Physics.gravity * fallMultiplier, ForceMode.Acceleration);
-        } else {
-            rb.useGravity = true;
-        }
+        //if (rb.velocity.y < 0) {
+        //    rb.useGravity = false;
+        //    rb.AddForce(Physics.gravity * fallMultiplier, ForceMode.Acceleration);
+        //    AddDebugMessage("Gravity: " + Physics.gravity * fallMultiplier);
+        //} else {
+        //    rb.useGravity = true;
+        //    AddDebugMessage("Gravity: " + Physics.gravity);
+        //}
 
-        AddDebugMessage("Gravity: " + rb.useGravity + '\t' + Physics.gravity);
     }
 
     private void OnDrawGizmos()
     {
         if (debugOn) {
             // Ground detection
-            if (isGrounded)
-            {
+            if (isGrounded) {
                 Gizmos.color = Color.red;
-            }
-            else
-            {
+            } else {
                 Gizmos.color = Color.white;
             }
             Gizmos.DrawLine(transform.position, transform.position + (Vector3.down * groundDistance));
