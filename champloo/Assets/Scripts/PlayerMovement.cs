@@ -5,8 +5,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Horizontal Movement")]
-    public bool useVelocityMovement = true;
+    [Header("Lateral Movement")]
     public float movementSpeed = 10.0f;
     public float movementForce = 0.25f;
 
@@ -96,18 +95,13 @@ public class PlayerMovement : MonoBehaviour
         Vector3 movement = new Vector3(playerInput.horizontalMovementInput, 0f, playerInput.verticalMovementInput);
         movement.Normalize();
 
-        if (useVelocityMovement) {
-            // Use rigidbody velocity
-
-            // Use current movement speed in order to determine how much velocity to add
-            // Only add enough velocity to get maginitude(velocity(x,z)) == movementSpeed
-            Vector2 currentMovement = new Vector2(rb.velocity.x, rb.velocity.z);
-            if (currentMovement.magnitude < movementSpeed) {
-                rb.AddForce(movement * movementForce, ForceMode.VelocityChange);
-            }
-        } else {
-            // Use rigidbody force
-        }
+        Vector3 currMovement = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        float currMagnitude = currMovement.magnitude;
+        if (currMagnitude <= movementSpeed) {
+            rb.AddForce(movement * movementForce, ForceMode.VelocityChange);
+        } /*else if (currMagnitude > movementSpeed) {
+            rb.AddForce((movement * movementForce) + (currMovement * (-1 * movementSpeed / currMagnitude)), ForceMode.VelocityChange);
+        }*/
 
         AddDebugMessage("Position: " + transform.position);
         AddDebugMessage("Velocity: " + rb.velocity);
@@ -120,6 +114,7 @@ public class PlayerMovement : MonoBehaviour
         } else {
             isGrounded = false;
         }
+
         AddDebugMessage("Grounded: " + isGrounded);
     }
 
@@ -147,14 +142,14 @@ public class PlayerMovement : MonoBehaviour
             remainingJumps -= 1;
         }
 
-        //if (rb.velocity.y < 0) {
-        //    rb.useGravity = false;
-        //    rb.AddForce(Physics.gravity * fallMultiplier, ForceMode.Acceleration);
-        //    AddDebugMessage("Gravity: " + Physics.gravity * fallMultiplier);
-        //} else {
-        //    rb.useGravity = true;
-        //    AddDebugMessage("Gravity: " + Physics.gravity);
-        //}
+        if (rb.velocity.y < 0) {
+            //rb.useGravity = false;
+            rb.AddForce(Physics.gravity * (fallMultiplier - 1), ForceMode.Acceleration);
+            AddDebugMessage("Gravity: " + Physics.gravity * fallMultiplier);
+        } else {
+            //rb.useGravity = true;
+            AddDebugMessage("Gravity: " + Physics.gravity);
+        }
 
     }
 
