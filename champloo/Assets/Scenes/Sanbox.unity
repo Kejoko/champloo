@@ -764,11 +764,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69e2961a3609c4b4888643c3d60bfce1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useVelocityMovement: 1
+  useVelocityMove: 1
   movementSpeed: 10
-  movementForce: 0.25
+  useVelocityJump: 1
   numberJumps: 2
-  jumpForce: 5
+  jumpSpeed: 5
   fallMultiplier: 6
   groundDistance: 1
   debugOn: 1

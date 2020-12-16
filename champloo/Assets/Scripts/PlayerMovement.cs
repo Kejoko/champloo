@@ -6,12 +6,13 @@ using UnityEngine.UI;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Lateral Movement")]
+    public bool useVelocityMove = true;
     public float movementSpeed = 10.0f;
-    public float movementForce = 0.25f;
 
     [Header("Vertical Movement")]
+    public bool useVelocityJump = true;
     public int numberJumps = 2;
-    public float jumpForce = 5.0f;
+    public float jumpSpeed = 5.0f;
     public float fallMultiplier = 2.5f;
     private int remainingJumps;
 
@@ -95,13 +96,24 @@ public class PlayerMovement : MonoBehaviour
         Vector3 movement = new Vector3(playerInput.horizontalMovementInput, 0f, playerInput.verticalMovementInput);
         movement.Normalize();
 
-        Vector3 currMovement = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        float currMagnitude = currMovement.magnitude;
-        if (currMagnitude <= movementSpeed) {
-            rb.AddForce(movement * movementForce, ForceMode.VelocityChange);
-        } /*else if (currMagnitude > movementSpeed) {
-            rb.AddForce((movement * movementForce) + (currMovement * (-1 * movementSpeed / currMagnitude)), ForceMode.VelocityChange);
-        }*/
+        if (useVelocityMove) {
+            rb.velocity += movement * movementSpeed;
+
+            Vector3 currMovement = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            if (currMovement.magnitude > movementSpeed) {
+                rb.velocity = currMovement.normalized * movementSpeed + Vector3.up * rb.velocity.y;
+            }
+        } else {
+            rb.AddForce(movement * movementSpeed * Time.fixedDeltaTime, ForceMode.VelocityChange);
+
+            /*
+            Vector3 currMovement = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            float currMagnitude = currMovement.magnitude;
+            if (currMagnitude > movementSpeed) {
+                rb.AddForce(currMovement * (-1 * movementSpeed / currMagnitude), ForceMode.VelocityChange);
+            }
+            */
+        }
 
         AddDebugMessage("Position: " + transform.position);
         AddDebugMessage("Velocity: " + rb.velocity);
@@ -136,18 +148,23 @@ public class PlayerMovement : MonoBehaviour
 
         AddDebugMessage("Remaining jumps: " + remainingJumps);
 
-        if (playerInput.jumpInput && remainingJumps > 0) {
-            rb.AddForce(new Vector3(0, -rb.velocity.y, 0), ForceMode.VelocityChange);
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
-            remainingJumps -= 1;
+        if (useVelocityJump) {
+            if (playerInput.jumpInput && remainingJumps > 0) {
+                rb.velocity += new Vector3(0f, -rb.velocity.y + jumpSpeed, 0f);
+                remainingJumps -= 1;
+            }
+        } else {
+            if (playerInput.jumpInput && remainingJumps > 0) {
+                rb.AddForce(new Vector3(0, -rb.velocity.y, 0), ForceMode.VelocityChange);
+                rb.AddForce(Vector3.up * jumpSpeed, ForceMode.VelocityChange);
+                remainingJumps -= 1;
+            }
         }
 
         if (rb.velocity.y < 0) {
-            //rb.useGravity = false;
             rb.AddForce(Physics.gravity * (fallMultiplier - 1), ForceMode.Acceleration);
             AddDebugMessage("Gravity: " + Physics.gravity * fallMultiplier);
         } else {
-            //rb.useGravity = true;
             AddDebugMessage("Gravity: " + Physics.gravity);
         }
 
