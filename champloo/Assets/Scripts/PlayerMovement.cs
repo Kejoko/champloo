@@ -178,13 +178,15 @@ public class PlayerMovement : MonoBehaviour
     private void OnDrawGizmos()
     {
         if (debugOn) {
+            Color gizmoColor;
+
             // Ground detection
             if (isGrounded) {
-                Gizmos.color = Color.red;
+                gizmoColor = Color.red;
             } else {
-                Gizmos.color = Color.white;
+                gizmoColor = Color.white;
             }
-            Gizmos.DrawLine(transform.position, transform.position + (Vector3.down * groundDistance));
+            Gizmos.DrawLine(transform.position + (Vector3.up * 30), transform.position + (Vector3.down * groundDistance * 30), gizmoColor);
         }
     }
 }
