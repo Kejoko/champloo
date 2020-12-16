@@ -765,7 +765,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useVelocityMove: 1
-  movementAcceleration: 1
+  movementAcceleration: 0.5
   movementDrag: 5
   maxMovementSpeed: 10
   useVelocityJump: 1

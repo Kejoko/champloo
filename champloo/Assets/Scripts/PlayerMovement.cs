@@ -112,8 +112,8 @@ public class PlayerMovement : MonoBehaviour
 
             currMovement.x = rb.velocity.x;
             currMovement.z = rb.velocity.z;
-            if (movement.magnitude == 0 && currMovement.magnitude > 0 && isGrounded) {
-                rb.velocity = new Vector3(0f, rb.velocity.y, 0f);
+            if (movement.magnitude == 0 && currMovement.magnitude > 0) {
+                rb.velocity -= currMovement * (movementAcceleration * 0.25f);
             }
         } else {
             Vector3 currMovement = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
