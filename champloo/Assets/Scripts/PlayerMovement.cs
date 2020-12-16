@@ -7,7 +7,9 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Lateral Movement")]
     public bool useVelocityMove = true;
-    public float movementSpeed = 10.0f;
+    public float movementAcceleration = 0.5f;
+    public float movementDrag = 5.0f;
+    public float maxMovementSpeed = 10.0f;
 
     [Header("Vertical Movement")]
     public bool useVelocityJump = true;
@@ -22,9 +24,9 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Debug")]
     public bool debugOn = true;
-    public Text debugMessage;
 
-    // Components
+    [Header("Components")]
+    public Text debugMessage;
     private PlayerInput playerInput;
     private Rigidbody rb;
 
@@ -97,22 +99,25 @@ public class PlayerMovement : MonoBehaviour
         movement.Normalize();
 
         if (useVelocityMove) {
-            rb.velocity += movement * movementSpeed;
+            if (isGrounded) {
+                rb.velocity += movement * movementAcceleration;
+            } else {
+                rb.velocity += movement * movementAcceleration / 5;
+            }
 
             Vector3 currMovement = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            if (currMovement.magnitude > movementSpeed) {
-                rb.velocity = currMovement.normalized * movementSpeed + Vector3.up * rb.velocity.y;
+            if (currMovement.magnitude > maxMovementSpeed) {
+                rb.velocity = currMovement.normalized * maxMovementSpeed + Vector3.up * rb.velocity.y;
+            }
+
+            currMovement.x = rb.velocity.x;
+            currMovement.z = rb.velocity.z;
+            if (movement.magnitude == 0 && currMovement.magnitude > 0 && isGrounded) {
+                rb.velocity = new Vector3(0f, rb.velocity.y, 0f);
             }
         } else {
-            rb.AddForce(movement * movementSpeed * Time.fixedDeltaTime, ForceMode.VelocityChange);
-
-            /*
             Vector3 currMovement = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            float currMagnitude = currMovement.magnitude;
-            if (currMagnitude > movementSpeed) {
-                rb.AddForce(currMovement * (-1 * movementSpeed / currMagnitude), ForceMode.VelocityChange);
-            }
-            */
+            rb.AddForce((movement * maxMovementSpeed) - currMovement, ForceMode.VelocityChange);
         }
 
         AddDebugMessage("Position: " + transform.position);
