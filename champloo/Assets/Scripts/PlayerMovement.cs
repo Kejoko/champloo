@@ -47,13 +47,6 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    /*
-    private void Start()
-    {
-        
-    }
-    */
-
     private void FixedUpdate()
     {
         ClearDebugMessages();
