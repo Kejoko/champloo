@@ -6,13 +6,11 @@ using UnityEngine.UI;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Lateral Movement")]
-    public bool useVelocityMove = true;
     public float movementAcceleration = 0.5f;
     public float movementDrag = 5.0f;
     public float maxMovementSpeed = 10.0f;
 
     [Header("Vertical Movement")]
-    public bool useVelocityJump = true;
     public int numberJumps = 2;
     public float jumpSpeed = 5.0f;
     public float fallMultiplier = 2.5f;
@@ -23,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded;
 
     [Header("Debug")]
-    public bool debugOn = true;
+    public bool debugOn = false;
 
     [Header("Components")]
     public Text debugMessage;
@@ -64,12 +62,12 @@ public class PlayerMovement : MonoBehaviour
         Jump();
     }
 
-    /*
     private void Update()
     {
-
+        if (playerInput.debugInput) {
+            debugOn = !debugOn;
+        }
     }
-    */
 
     /*
      * How do we want movement to work? Here are a list of important questions
@@ -98,26 +96,21 @@ public class PlayerMovement : MonoBehaviour
         Vector3 movement = new Vector3(playerInput.horizontalMovementInput, 0f, playerInput.verticalMovementInput);
         movement.Normalize();
 
-        if (useVelocityMove) {
-            if (isGrounded) {
-                rb.velocity += movement * movementAcceleration;
-            } else {
-                rb.velocity += movement * movementAcceleration / 5;
-            }
-
-            Vector3 currMovement = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            if (currMovement.magnitude > maxMovementSpeed) {
-                rb.velocity = currMovement.normalized * maxMovementSpeed + Vector3.up * rb.velocity.y;
-            }
-
-            currMovement.x = rb.velocity.x;
-            currMovement.z = rb.velocity.z;
-            if (movement.magnitude == 0 && currMovement.magnitude > 0) {
-                rb.velocity -= currMovement * (movementAcceleration * 0.25f);
-            }
+        if (isGrounded) {
+            rb.velocity += movement * movementAcceleration;
         } else {
-            Vector3 currMovement = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            rb.AddForce((movement * maxMovementSpeed) - currMovement, ForceMode.VelocityChange);
+            rb.velocity += movement * movementAcceleration / 5;
+        }
+
+        Vector3 currMovement = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        if (currMovement.magnitude > maxMovementSpeed) {
+            rb.velocity = currMovement.normalized * maxMovementSpeed + Vector3.up * rb.velocity.y;
+        }
+
+        currMovement.x = rb.velocity.x;
+        currMovement.z = rb.velocity.z;
+        if (movement.magnitude == 0 && currMovement.magnitude > 0) {
+            rb.velocity -= currMovement * (movementAcceleration * 0.25f);
         }
 
         AddDebugMessage("Position: " + transform.position);
@@ -153,17 +146,9 @@ public class PlayerMovement : MonoBehaviour
 
         AddDebugMessage("Remaining jumps: " + remainingJumps);
 
-        if (useVelocityJump) {
-            if (playerInput.jumpInput && remainingJumps > 0) {
-                rb.velocity += new Vector3(0f, -rb.velocity.y + jumpSpeed, 0f);
-                remainingJumps -= 1;
-            }
-        } else {
-            if (playerInput.jumpInput && remainingJumps > 0) {
-                rb.AddForce(new Vector3(0, -rb.velocity.y, 0), ForceMode.VelocityChange);
-                rb.AddForce(Vector3.up * jumpSpeed, ForceMode.VelocityChange);
-                remainingJumps -= 1;
-            }
+        if (playerInput.jumpInput && remainingJumps > 0) {
+            rb.velocity += new Vector3(0f, -rb.velocity.y + jumpSpeed, 0f);
+            remainingJumps -= 1;
         }
 
         if (rb.velocity.y < 0) {
@@ -186,7 +171,7 @@ public class PlayerMovement : MonoBehaviour
             } else {
                 gizmoColor = Color.white;
             }
-            Gizmos.DrawLine(transform.position + (Vector3.up * 30), transform.position + (Vector3.down * groundDistance * 30), gizmoColor);
+            Gizmos.DrawLine(transform.position, transform.position + (Vector3.down * groundDistance), gizmoColor);
         }
     }
 }
